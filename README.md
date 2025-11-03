@@ -69,6 +69,7 @@ cd Deco
 ```
 
 Step 2: Create and activate a virtual environment
+
 This is a best practice to keep dependencies isolated.
 
 - On macOS/Linux:
@@ -89,6 +90,7 @@ pip install -r requirements.txt
 ```
 
 Step 4: Create your API key file
+
 Create a new file in the root directory named *.env* and add your API key to it:
 ```
 .env
