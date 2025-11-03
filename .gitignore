@@ -1,0 +1,90 @@
+# Python virtual environment
+venv/
+myvenv/
+env/
+.venv/
+*.venv
+
+# Virtualenv/venv artifacts
+pip-wheel-metadata/
+__pypackages__/
+
+# Secret API keys
+.env
+*.env
+.env.local
+.env.*.local
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Test / coverage
+.pytest_cache/
+.coverage
+coverage/
+coverage.xml
+htmlcov/
+
+# Type check / tooling caches
+.mypy_cache/
+.cache/
+
+# Build / distribution
+build/
+dist/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints
+
+# Editor/IDE settings
+.vscode/
+.idea/
+*.suo
+*.user
+*.sln.docstates
+*.swp
+*.swo
+*.iml
+
+# Streamlit cache
+.streamlit/
+
+# Node / JS
+node_modules/
+npm-debug.log*
+yarn-error.log
+pnpm-lock.yaml
+
+# Poetry / Pipenv
+.poetry/
+.cache/pypoetry/
+Pipfile.lock
+
+# OS junk files
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+Icon?
+
+# Log files
+*.log
+*.tmp
+
+# Misc
+*.bak
+*.orig
+*.tmp
+
+# Misc secrets / keys
+secrets/
+*.pem
+*.key
+
+# Optional local files
+.python-version
+local.settings.json

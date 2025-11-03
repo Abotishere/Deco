@@ -1,0 +1,16 @@
+# core framework
+streamlit
+
+#langchain core
+langchain
+langchain-core
+langchain-community
+
+# google api integration
+langchain-google-genai
+google-generativeai
+
+# utilities
+Pillow
+python-dotenv
+pydantic<2
