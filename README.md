@@ -79,8 +79,8 @@ source myvenv/bin/activate
 
 - On Windows:
 ```
-python -m venv myvenv
-.\myvenv\Scripts\activate
+python -m venv venv
+.\venv\Scripts\activate
 ```
 
 Step 3: Install the required packages
