@@ -12,7 +12,7 @@ def get_decor_suggestions(user_prompt: str, pil_image, api_key: str):
     os.environ["GOOGLE_API_KEY"] = api_key
 
     # Initialize the ChatGoogleGenerativeAI model for vision
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest")
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
 
     # This is the main system prompt that instructs the AI on its role and output format.
     system_instruction = """

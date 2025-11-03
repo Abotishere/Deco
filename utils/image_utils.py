@@ -4,10 +4,14 @@ import io
 # A set of allowed file extensions
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
+# A sensible maximum size for the AI to analyze
+# The AI doesn't need an 8K photo. 1024x1024 is more than enough.
+MAX_SIZE = (1024, 1024)
+
 def load_and_validate_image(uploaded_file):
     """
     Loads an uploaded file from Streamlit, validates its extension,
-    and returns a PIL Image object.
+    resizes it, and returns a PIL Image object.
 
     Args:
         uploaded_file: The file object from st.file_uploader()
@@ -24,7 +28,6 @@ def load_and_validate_image(uploaded_file):
     # 1. Validate the file extension
     try:
         filename = uploaded_file.name
-        # Check if there is a '.' and the part after it is in our allowed set
         file_ext = filename.split('.')[-1].lower()
         if not ('.' in filename and file_ext in ALLOWED_EXTENSIONS):
             raise ValueError(f"Invalid file type. Please upload a .png, .jpg, or .jpeg file.")
@@ -34,21 +37,21 @@ def load_and_validate_image(uploaded_file):
 
     # 2. Load the file into a PIL Image object
     try:
-        # Read the file's bytes from the uploaded file
         image_data = uploaded_file.getvalue()
-        
-        # Open the image from the in-memory bytes
-        # io.BytesIO creates an "in-memory file" from the raw bytes
         image = Image.open(io.BytesIO(image_data))
         
-        # Best practice: Convert image to RGB. 
-        # This standardizes the image format and removes the alpha (transparency) 
-        # channel from PNGs, which is good for model compatibility.
+        # 3. Resize the Image 
+        # This is the crucial step to prevent long waits.
+        # Image.thumbnail preserves the aspect ratio.
+        image.thumbnail(MAX_SIZE, Image.LANCZOS)
+        
+        # 4. Convert to RGB (as before)
         if image.mode != 'RGB':
             image = image.convert('RGB')
             
         return image
         
     except Exception as e:
-        print(f"Error opening image: {e}")
+        print(f"Error opening or processing image: {e}")
         raise ValueError("The uploaded file appears to be corrupt or is not a valid image.")
+
