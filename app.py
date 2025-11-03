@@ -11,7 +11,7 @@ API_KEY = os.environ.get("GOOGLE_API_KEY")
 
 # --- 2. Page Configuration ---
 st.set_page_config(
-    page_title="Room Decorator AI",
+    page_title="Deco",
     page_icon="🛋️",
     layout="wide"
 )
@@ -82,7 +82,16 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 4. UI Setup ---
-st.title("🛋️ AI Interior Designer")
+title_col1, title_col2 = st.columns([1, 5]) # Small column for logo, large for title
+
+with title_col1:
+    # --- ADD YOUR LOGO HERE ---
+    # You can use a local file: st.image("logo.png", width=100)
+    # Or replace this URL with your own:
+    st.image("https://placehold.co/100x100/262730/f0f2f6?text=LOGO", width=100)
+
+
+st.title("Deco - Customize your Room")
 st.markdown("Upload an image of your room, describe your vision, and I'll give you a complete decoration plan!")
 
 st.divider()
