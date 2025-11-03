@@ -9,10 +9,14 @@ from chains.decor_chain import get_decor_suggestions
 load_dotenv()
 API_KEY = os.environ.get("GOOGLE_API_KEY")
 
+# --- NEW: Define Logo URL ---
+# You can replace this with a local path: "logo.png" or your own URL
+LOGO_URL = "https://placehold.co/100x100/262730/f0f2f6?text=LOGO"
+
 # --- 2. Page Configuration ---
 st.set_page_config(
-    page_title="Deco",
-    page_icon="🛋️",
+    page_title="Deco - Customize your Room",
+    page_icon=LOGO_URL,  # --- UPDATED: Use logo URL for icon ---
     layout="wide"
 )
 
@@ -82,17 +86,17 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # --- 4. UI Setup ---
+# --- Added columns for Logo and Title ---
 title_col1, title_col2 = st.columns([1, 5]) # Small column for logo, large for title
 
 with title_col1:
     # --- ADD YOUR LOGO HERE ---
-    # You can use a local file: st.image("logo.png", width=100)
-    # Or replace this URL with your own:
-    st.image("https://placehold.co/100x100/262730/f0f2f6?text=LOGO", width=100)
+    # --- UPDATED: Use logo URL variable ---
+    st.image(LOGO_URL, width=100)
 
-
-st.title("Deco - Customize your Room")
-st.markdown("Upload an image of your room, describe your vision, and I'll give you a complete decoration plan!")
+with title_col2:
+    st.title("🛋️ AI Interior Designer")
+    st.markdown("Upload an image of your room, describe your vision, and I'll give you a complete decoration plan!")
 
 st.divider()
 
@@ -101,8 +105,24 @@ if not API_KEY:
     st.error("Error: GOOGLE_API_KEY not found. Please create a .env file with your key.")
     st.stop() # Stop the app if the key is missing
 
-# --- 6. Main App Logic ---
+# --- 6. Initialize Session State ---
+# This is the key to making results "stick"
+if 'suggestions' not in st.session_state:
+    st.session_state.suggestions = None
+if 'uploaded_image' not in st.session_state:
+    st.session_state.uploaded_image = None
+
+# --- 7. Main App Logic ---
 col1, col2 = st.columns([1, 1]) # 50/50 split
+
+# --- Logic for handling button clicks ---
+# We process the logic *before* drawing the output column
+def clear_state():
+    """Resets the session state to its defaults."""
+    st.session_state.suggestions = None
+    st.session_state.uploaded_image = None
+    # We don't need to manually clear widgets if we use keys, 
+    # but a rerun is cleaner.
 
 with col1:
     st.subheader("1. Your Room & Vision")
@@ -117,51 +137,56 @@ with col1:
         placeholder="e.g., 'I want a cozy, minimalist style with a budget of $500. Focus on neutral colors and natural light.'"
     )
     
-    generate_button = st.button("✨ Generate Decoration Plan")
+    # --- Button columns for layout ---
+    btn_col1, btn_col2 = st.columns(2)
+    with btn_col1:
+        generate_button = st.button("✨ Generate Decoration Plan", use_container_width=True)
+    with btn_col2:
+        revert_button = st.button("Clear & Start Over", on_click=clear_state, use_container_width=True)
 
-# col2 is for the output
-with col2:
-    st.subheader("3. Your New Look")
-
+    # --- Handle Generate Button Click ---
     if generate_button:
-        # --- 7. Input Validation ---
         if uploaded_file is None:
             st.warning("Please upload an image first.")
         elif not user_prompt:
             st.warning("Please describe your vision for the room.")
         else:
-            # --- 8. Process and Generate ---
             try:
                 with st.spinner("Analyzing your room and designing your plan..."):
-                    
-                    # Load and validate the image using our util
+                    # Process the image and get suggestions
                     pil_image = load_and_validate_image(uploaded_file)
-                    
-                    # Display the uploaded image
-                    # --- FIX: Replaced use_column_width=True with width='stretch' ---
-                    st.image(pil_image, caption="Your Uploaded Room", width='stretch')
-                    
-                    st.divider()
-
-                    # Call the AI chain
                     suggestions = get_decor_suggestions(
                         user_prompt=user_prompt,
                         pil_image=pil_image,
                         api_key=API_KEY
                     )
                     
-                    # Display the AI's formatted response
-                    st.markdown(suggestions)
+                    # --- Store results in session state ---
+                    st.session_state.suggestions = suggestions
+                    st.session_state.uploaded_image = pil_image
+                    
+                    # Rerun to update the output column immediately
+                    st.rerun()
 
             except ValueError as e:
                 st.error(f"Image Error: {e}")
             except Exception as e:
                 st.error(f"An unexpected error occurred: {e}")
+
+# col2 is for the output
+with col2:
+    st.subheader("3. Your New Look")
+
+    # --- Display logic is now based on session state ---
+    if st.session_state.suggestions:
+        # If we have suggestions, display them
+        st.image(st.session_state.uploaded_image, caption="Your Uploaded Room", width='stretch') # <-- UPDATED
+        st.divider()
+        st.markdown(st.session_state.suggestions)
     
     else:
-        # This is the "empty state" placeholder, adjusted for dark mode
+        # This is the "empty state" placeholder
         st.info("Your new design plan will appear here once you click 'Generate'.")
         # Darker placeholder image
-        # --- FIX: Replaced use_container_width=True with width='stretch' ---
-        st.image("https://placehold.co/600x400/3d3d4a/9292a0?text=Your%20Plan%20Appears%20Here", width='stretch')
+        st.image("https://placehold.co/600x400/3d3d4a/9292a0?text=Your%20Plan%20Appears%20Here", width='stretch') # <-- UPDATED
 
